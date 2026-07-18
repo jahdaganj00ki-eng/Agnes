@@ -16,7 +16,9 @@ jobs:
           dotnet-version: 9.0.x
       - run: pwsh scripts/extract-skills.ps1
       - run: dotnet restore AgnesWindows.sln
-      - run: dotnet build src/AgnesWindows.Core/AgnesWindows.Core.csproj src/AgnesWindows.Infrastructure/AgnesWindows.Infrastructure.csproj tests/AgnesWindows.Tests/AgnesWindows.Tests.csproj --configuration Release --no-restore
+      - run: dotnet build src/AgnesWindows.Core/AgnesWindows.Core.csproj --configuration Release --no-restore
+      - run: dotnet build src/AgnesWindows.Infrastructure/AgnesWindows.Infrastructure.csproj --configuration Release --no-restore
+      - run: dotnet build tests/AgnesWindows.Tests/AgnesWindows.Tests.csproj --configuration Release --no-restore
       - run: dotnet test tests/AgnesWindows.Tests/AgnesWindows.Tests.csproj --no-build --verbosity normal
       - uses: actions/upload-artifact@v4
         with:
