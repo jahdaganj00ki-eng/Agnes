@@ -36,11 +36,9 @@ public class AuthService : IAuthService
         {
             // Windows.Security.Credentials not available on this platform
         }
-    }
+}
 
-    private readonly ILogger<AuthService> _logger;
-
-    public AuthService(ILogger<AuthService> logger)
+	public AuthService(ILogger<AuthService> logger)
     {
         _logger = logger;
     }
