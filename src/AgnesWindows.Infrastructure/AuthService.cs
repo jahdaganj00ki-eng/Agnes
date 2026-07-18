@@ -39,8 +39,6 @@ public class AuthService : IAuthService
     }
 
     private readonly ILogger<AuthService> _logger;
-    private const string CredentialResource = "AgnesWindows.ApiKey";
-    private const string CredentialUserName = "AgnesWindowsUser";
 
     public AuthService(ILogger<AuthService> logger)
     {
@@ -78,7 +76,7 @@ public class AuthService : IAuthService
         {
             if (OperatingSystem.IsWindows() && AddMethod != null)
             {
-                var vaultInstance = Activator.CreateInstance(PasswordVaultType!);
+                var vault = Activator.CreateInstance(PasswordVaultType!);
                 
                 // Use reflection to create PasswordCredential
                 var windowsAssembly = Assembly.Load("Windows, Version=255.255.255.255, Culture=neutral, PublicKeyToken=null, ContentType=WindowsRuntime");
