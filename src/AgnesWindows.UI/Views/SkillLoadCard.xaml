@@ -1,0 +1,49 @@
+<UserControl
+    x:Class="AgnesWindows.UI.Views.SkillLoadCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:AgnesWindows.UI.ViewModels"
+    MinHeight="48">
+
+    <Border 
+        Background="#2C2C2E" 
+        CornerRadius="8"
+        Padding="12,8"
+        Opacity="0.9">
+        <Grid ColumnSpacing="12" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Book Icon -->
+            <FontIcon 
+                Grid.Column="0" 
+                Glyph="📚" 
+                FontSize="20"
+                VerticalAlignment="Center"/>
+
+            <!-- Skill Info -->
+            <StackPanel Grid.Column="1" Spacing="2">
+                <TextBlock 
+                    Text="{Binding SkillPath}" 
+                    Foreground="{StaticResource TextPrimaryBrush}"
+                    FontSize="14"
+                    FontWeight="Medium"/>
+                <TextBlock 
+                    Text="{Binding CharCount, StringFormat='{}{0:N0} chars'}" 
+                    Foreground="{StaticResource TextSecondaryBrush}"
+                    FontSize="12"/>
+            </StackPanel>
+
+            <!-- Status -->
+            <FontIcon 
+                Grid.Column="2" 
+                Glyph="✓" 
+                Foreground="{StaticResource SuccessBrush}"
+                FontSize="16"
+                VerticalAlignment="Center"/>
+        </Grid>
+    </Border>
+</UserControl>

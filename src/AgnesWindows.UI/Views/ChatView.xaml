@@ -1,0 +1,49 @@
+<UserControl
+    x:Class="AgnesWindows.UI.Views.ChatView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:AgnesWindows.UI.ViewModels"
+    xmlns:views="using:AgnesWindows.UI.Views"
+    MinHeight="300">
+
+    <UserControl.DataContext>
+        <vm:ChatViewModel/>
+    </UserControl.DataContext>
+
+    <Border 
+        Background="{StaticResource CardBackgroundBrush}" 
+        CornerRadius="12"
+        Padding="16">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12">
+                <!-- Skill Loading Cards -->
+                <ItemsControl ItemsSource="{Binding SkillLoads}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:SkillLoadEvent">
+                            <views:SkillLoadCard/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Prompt Enhancement Panel -->
+                <views:PromptEnhancementPanel/>
+
+                <!-- Image Result -->
+                <views:ImageBlock/>
+
+                <!-- Error State -->
+                <Border 
+                    Visibility="{Binding State, Converter={StaticResource EditImageStateToVisibilityConverter}, ConverterParameter=Error}"
+                    Background="#3A1C1C"
+                    CornerRadius="8"
+                    Padding="16">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="Generation Failed" Foreground="{StaticResource ErrorBrush}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding LastResult.ErrorMessage}" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap"/>
+                        <Button Content="Retry" Click="OnRetryClick" Background="{StaticResource AccentBlueBrush}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>
