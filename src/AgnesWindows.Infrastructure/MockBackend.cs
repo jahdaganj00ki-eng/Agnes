@@ -1,6 +1,7 @@
 using AgnesWindows.Core.Models;
 using AgnesWindows.Core.Services;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace AgnesWindows.Infrastructure;
 
@@ -39,7 +40,7 @@ public class MockBackend : IImageGenerationBackend
         return $"[Enhanced] {originalPrompt}";
     }
 
-    public async IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(CancellationToken ct = default)
+    public async IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync([EnumeratorCancellation] CancellationToken ct = default)
     {
         var skills = new[]
         {

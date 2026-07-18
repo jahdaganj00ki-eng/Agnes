@@ -2,9 +2,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using AgnesWindows.Core.Services;
 using Microsoft.Extensions.Logging;
+using System.Runtime.Versioning;
 
 namespace AgnesWindows.Infrastructure;
 
+[SupportedOSPlatform("windows")]
 public class ImageUploadService : IImageUploadService
 {
     private readonly ILogger<ImageUploadService> _logger;

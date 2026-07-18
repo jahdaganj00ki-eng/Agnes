@@ -1,4 +1,5 @@
 using AgnesWindows.Core.Models;
+using System.Runtime.CompilerServices;
 
 namespace AgnesWindows.Core.Services;
 
@@ -14,5 +15,6 @@ public interface IImageGenerationBackend
         bool isImageToImage,
         CancellationToken ct = default);
 
-    IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(CancellationToken ct = default);
+    IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(
+        [EnumeratorCancellation] CancellationToken ct = default);
 }

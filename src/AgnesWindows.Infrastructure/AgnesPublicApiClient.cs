@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 using AgnesWindows.Core.Models;
 using AgnesWindows.Core.Services;
 using Microsoft.Extensions.Configuration;
@@ -156,7 +158,7 @@ public class AgnesPublicApiClient : IImageGenerationBackend, IDisposable
         }
     }
 
-    public async IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(CancellationToken ct = default)
+    public async IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync([EnumeratorCancellation] CancellationToken ct = default)
     {
         var skillFiles = new[]
         {
@@ -172,10 +174,11 @@ public class AgnesPublicApiClient : IImageGenerationBackend, IDisposable
             
             await Task.Delay(Random.Shared.Next(50, 200), ct);
             
+            SkillLoadEvent result;
             try
             {
                 var content = await File.ReadAllTextAsync(Path.Combine("AgnesWindows.Skills", "extracted", fileName), ct);
-                yield return new SkillLoadEvent
+                result = new SkillLoadEvent
                 {
                     SkillPath = skillName,
                     CharCount = content.Length,
@@ -186,7 +189,7 @@ public class AgnesPublicApiClient : IImageGenerationBackend, IDisposable
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to load skill {Skill}", skillName);
-                yield return new SkillLoadEvent
+                result = new SkillLoadEvent
                 {
                     SkillPath = skillName,
                     CharCount = 0,
@@ -195,6 +198,7 @@ public class AgnesPublicApiClient : IImageGenerationBackend, IDisposable
                     LoadDuration = DateTime.UtcNow - start
                 };
             }
+            yield return result;
         }
     }
 
