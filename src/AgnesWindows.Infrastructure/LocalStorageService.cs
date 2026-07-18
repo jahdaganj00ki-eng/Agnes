@@ -1,5 +1,8 @@
 using AgnesWindows.Core.Services;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using Windows.Security.Credentials;
 
 namespace AgnesWindows.Infrastructure;
 
@@ -14,29 +17,48 @@ public class LocalStorageService : IStorageService
         _appDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AgnesWindows");
-        
+
         Directory.CreateDirectory(_appDataPath);
         Directory.CreateDirectory(Path.Combine(_appDataPath, "images"));
     }
 
     public Task<string?> GetApiKeyAsync(CancellationToken ct = default)
     {
-        var vault = new Windows.Security.Credentials.PasswordVault();
-        try
+        if (OperatingSystem.IsWindows())
         {
-            var credential = vault.Retrieve("AgnesWindows.ApiKey", "AgnesWindowsUser");
-            return Task.FromResult<string?>(credential?.Password);
+            try
+            {
+                var vault = new Windows.Security.Credentials.PasswordVault();
+                var credential = vault.Retrieve("AgnesWindows.ApiKey", "AgnesWindowsUser");
+                return Task.FromResult<string?>(credential?.Password);
+            }
+            catch
+            {
+                return Task.FromResult<string?>(null);
+            }
         }
-        catch
-        {
-            return Task.FromResult<string?>(null);
-        }
+
+        // On non-Windows, fall back to environment variable
+        return Task.FromResult<string?>(Environment.GetEnvironmentVariable("AGNES_API_KEY"));
     }
 
     public Task SaveApiKeyAsync(string apiKey, CancellationToken ct = default)
     {
-        var vault = new Windows.Security.Credentials.PasswordVault();
-        vault.Add(new Windows.Security.Credentials.PasswordCredential("AgnesWindows.ApiKey", "AgnesWindowsUser", apiKey));
+        if (OperatingSystem.IsWindows())
+        {
+            try
+            {
+                var vault = new Windows.Security.Credentials.PasswordVault();
+                vault.Add(new Windows.Security.Credentials.PasswordCredential("AgnesWindows.ApiKey", "AgnesWindowsUser", apiKey));
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        // On non-Windows, just log (user should set env var manually)
         return Task.CompletedTask;
     }
 
