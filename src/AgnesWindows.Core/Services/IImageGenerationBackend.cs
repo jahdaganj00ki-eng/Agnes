@@ -15,6 +15,5 @@ public interface IImageGenerationBackend
         bool isImageToImage,
         CancellationToken ct = default);
 
-    IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(
-        [EnumeratorCancellation] CancellationToken ct = default);
+    IAsyncEnumerable<SkillLoadEvent> LoadSkillsAsync(CancellationToken ct = default);
 }

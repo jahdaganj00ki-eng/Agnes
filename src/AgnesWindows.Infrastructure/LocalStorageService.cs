@@ -11,7 +11,6 @@ public class LocalStorageService : IStorageService
     private readonly ILogger<LocalStorageService> _logger;
     private readonly string _appDataPath;
     private static readonly Type? PasswordVaultType;
-    private static readonly Type? PasswordCredentialType;
     private static readonly MethodInfo? RetrieveMethod;
     private static readonly MethodInfo? AddMethod;
 
@@ -30,7 +29,6 @@ public class LocalStorageService : IStorageService
                 var addMethod = passwordVaultType.GetMethod("Add", new[] { typeof(object) });
                 
                 PasswordVaultType = passwordVaultType;
-                PasswordCredentialType = null; // We'll use reflection for this too
                 RetrieveMethod = retrieveMethod;
                 AddMethod = addMethod;
             }

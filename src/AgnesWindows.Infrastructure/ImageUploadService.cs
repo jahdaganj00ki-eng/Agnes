@@ -17,14 +17,14 @@ public class ImageUploadService : IImageUploadService
         _logger = logger;
     }
 
-    public async Task<UploadResult> TryConvertToBase64Async(string filePath, CancellationToken ct = default)
+    public Task<UploadResult> TryConvertToBase64Async(string filePath, CancellationToken ct = default)
     {
         try
         {
             var fileInfo = new FileInfo(filePath);
             if (fileInfo.Length > MaxBase64SizeBytes)
             {
-                return new UploadResult { Succeeded = false, Reason = "File too large for Base64" };
+                return Task.FromResult(new UploadResult { Succeeded = false, Reason = "File too large for Base64" });
             }
 
             byte[] imageBytes;
@@ -36,17 +36,17 @@ public class ImageUploadService : IImageUploadService
             }
 
             var base64 = Convert.ToBase64String(imageBytes);
-            return new UploadResult 
-            { 
-                Succeeded = true, 
+            return Task.FromResult(new UploadResult
+            {
+                Succeeded = true,
                 Base64Data = base64,
                 MimeType = "image/png"
-            };
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to convert image to Base64");
-            return new UploadResult { Succeeded = false, Reason = ex.Message };
+            return Task.FromResult(new UploadResult { Succeeded = false, Reason = ex.Message });
         }
     }
 
