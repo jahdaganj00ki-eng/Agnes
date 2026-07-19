@@ -1,0 +1,30 @@
+<Page
+    x:Class="AgnesWindows.App.Pages.EditImagePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AgnesWindows.UI.ViewModels"
+    xmlns:views="using:AgnesWindows.UI.Views"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel Spacing="16">
+            <TextBlock 
+                Text="Edit Image" 
+                FontSize="28" 
+                FontWeight="SemiBold"
+                Foreground="{StaticResource TextPrimaryBrush}"/>
+
+            <views:ChatView HorizontalAlignment="Stretch"/>
+
+            <!-- Aspect Ratio Selector -->
+            <Border Background="{StaticResource CardBackgroundBrush}" CornerRadius="12" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Aspect Ratio" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <views:AspectRatioSelector SelectedRatio="{Binding ChatViewModel.SelectedAspectRatio, Mode=TwoWay}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

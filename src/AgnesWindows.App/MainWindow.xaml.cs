@@ -2,9 +2,12 @@ using AgnesWindows.Core.Services;
 using AgnesWindows.Infrastructure;
 using AgnesWindows.UI.ViewModels;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.AppLifecycle;
+using System;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -18,30 +21,52 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        
-        _chatViewModel = new ChatViewModel(
-            new AgnesPublicApiClient(
-                GetConfiguration(),
-                new Infrastructure.LoggerFactory().CreateLogger<AgnesPublicApiClient>()),
-            new LocalStorageService(
-                new Infrastructure.LoggerFactory().CreateLogger<LocalStorageService>()));
 
-        DataContext = _chatViewModel;
+        // Get ChatViewModel from DI container
+        _chatViewModel = Ioc.Default.GetRequiredService<ChatViewModel>();
+
+        // Set the frame's DataContext to the ChatViewModel for the Edit page
+        ContentFrame.Navigated += ContentFrame_Navigated;
+
+        // Navigate to Edit page by default
+        ContentFrame.Navigate(typeof(Pages.EditImagePage));
     }
 
-    private static Microsoft.Extensions.Configuration.IConfiguration GetConfiguration()
+    private void ContentFrame_Navigated(object sender, NavigationEventArgs e)
     {
-        return new Microsoft.Extensions.Configuration.ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
-    }
-
-    private void OnSendClick(object sender, RoutedEventArgs e)
-    {
-        if (_chatViewModel.SubmitCommand.CanExecute(null))
+        // Pass the ChatViewModel to pages that need it
+        if (e.Content is FrameworkElement element)
         {
-            _chatViewModel.SubmitCommand.Execute(null);
+            element.DataContext = Ioc.Default.GetRequiredService<ChatViewModel>();
+        }
+    }
+
+    private void NavigationView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    {
+        if (args.SelectedItem is NavigationViewItem item)
+        {
+            var tag = item.Tag?.ToString();
+            switch (tag)
+            {
+                case "Edit":
+                    ContentFrame.Navigate(typeof(Pages.EditImagePage));
+                    break;
+                case "History":
+                    ContentFrame.Navigate(typeof(Pages.HistoryPage));
+                    break;
+                case "Settings":
+                    ContentFrame.Navigate(typeof(Pages.SettingsPage));
+                    break;
+            }
+        }
+    }
+
+    private void OnPromptKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter && !e.KeyStatus.IsShiftDown)
+        {
+            e.Handled = true;
+            OnSendClick(sender, null);
         }
     }
 
@@ -54,12 +79,23 @@ public partial class MainWindow : Window
         picker.FileTypeFilter.Add(".bmp");
 
         var hwnd = Win32Interop.GetWindowFromWindowId(AppInstance.GetCurrent().GetWindow().Id);
-        InitializeWithWindow.Initialize(picker, hwnd);
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
         var file = await picker.PickSingleFileAsync();
         if (file != null)
         {
-            _chatViewModel.InputImagePath = file.Path;
+            // Get the ChatViewModel from DI (same instance)
+            var chatVM = Ioc.Default.GetRequiredService<ChatViewModel>();
+            chatVM.InputImagePath = file.Path;
+        }
+    }
+
+    private void OnSendClick(object sender, RoutedEventArgs e)
+    {
+        var chatVM = Ioc.Default.GetRequiredService<ChatViewModel>();
+        if (chatVM.SubmitCommand.CanExecute(null))
+        {
+            chatVM.SubmitCommand.Execute(null);
         }
     }
 }

@@ -2,6 +2,7 @@
     x:Class="AgnesWindows.App.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:AgnesWindows.UI.Converters"
     RequestedTheme="Dark">
 
     <Application.Resources>
@@ -9,6 +10,11 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="urn:schemas-microsoft-com:winfx/2006/xaml/presentation/tools" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <conv:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+            <conv:BoolToStringConverter x:Key="BoolToStringConverter"/>
+            <conv:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
 
             <!-- Dark Theme Colors -->
             <SolidColorBrush x:Key="AppBackgroundBrush" Color="#000000"/>

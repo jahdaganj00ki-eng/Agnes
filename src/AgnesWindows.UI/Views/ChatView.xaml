@@ -6,10 +6,6 @@
     xmlns:views="using:AgnesWindows.UI.Views"
     MinHeight="300">
 
-    <UserControl.DataContext>
-        <vm:ChatViewModel/>
-    </UserControl.DataContext>
-
     <Border 
         Background="{StaticResource CardBackgroundBrush}" 
         CornerRadius="12"

@@ -2,13 +2,21 @@
     x:Class="AgnesWindows.App.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:AgnesWindows.UI.ViewModels"
     xmlns:views="using:AgnesWindows.UI.Views"
+    xmlns:converters="using:AgnesWindows.UI.Converters"
+    mc:Ignorable="d"
     Title="Agnes Windows"
-    MinWidth="800"
-    MinHeight="600"
-    Width="1200"
-    Height="800">
+    MinWidth="1000"
+    MinHeight="700"
+    Width="1280"
+    Height="850">
+
+    <Window.Resources>
+        <converters:EditImageStateToVisibilityConverter x:Key="StateToVisibilityConverter" />
+    </Window.Resources>
 
     <Window.DataContext>
         <vm:MainViewModel/>
@@ -26,38 +34,26 @@
             Grid.Row="0"
             PaneDisplayMode="Top"
             IsBackButtonVisible="Collapsed"
-            IsSettingsVisible="False"
-            Background="{StaticResource CardBackgroundBrush}">
+            IsSettingsVisible="True"
+            Background="{StaticResource CardBackgroundBrush}"
+            SelectionChanged="NavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="Edit Image" IsSelected="True" Tag="edit"/>
-                <NavigationViewItem Content="History" Tag="history"/>
-                <NavigationViewItem Content="Settings" Tag="settings"/>
+                <NavigationViewItem Content="Edit Image" Tag="Edit" IsSelected="True" Icon="Edit"/>
+                <NavigationViewItem Content="History" Tag="History" Icon="Clock"/>
+                <NavigationViewItem Content="Settings" Tag="Settings" Icon="Setting"/>
             </NavigationView.MenuItems>
         </NavigationView>
 
         <!-- Main Content Area -->
-        <ScrollViewer 
-            Grid.Row="1" 
-            VerticalScrollBarVisibility="Auto"
-            Padding="24">
-            <StackPanel Spacing="16">
-                <TextBlock 
-                    Text="Edit Image" 
-                    FontSize="28" 
-                    FontWeight="SemiBold"
-                    Foreground="{StaticResource TextPrimaryBrush}"/>
+        <Frame x:Name="ContentFrame" Grid.Row="1" Margin="16" />
 
-                <views:ChatView 
-                    HorizontalAlignment="Stretch"
-                    Height="400"/>
-            </StackPanel>
-        </ScrollViewer>
-
-        <!-- Input Bar -->
-        <Border 
-            Grid.Row="2" 
+        <!-- Input Bar (Fixed at bottom for Edit page) -->
+        <Border
+            x:Name="InputBar"
+            Grid.Row="2"
             Background="{StaticResource CardBackgroundBrush}"
-            Padding="16">
+            Padding="16"
+            Visibility="{Binding State, Converter={StaticResource StateToVisibilityConverter}, ConverterParameter=Idle, Converter={StaticResource StateToVisibilityConverter}}">
             <Grid ColumnSpacing="12">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -72,7 +68,8 @@
                     Background="#2C2C2E"
                     CornerRadius="8"
                     Padding="12,8"
-                    Text="{Binding UserPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    Text="{Binding UserPrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    KeyDown="OnPromptKeyDown"/>
 
                 <Button
                     Grid.Column="1"
@@ -81,16 +78,18 @@
                     Height="48"
                     CornerRadius="24"
                     Background="{StaticResource AccentBlueBrush}"
-                    Click="OnAttachImageClick"/>
+                    Click="OnAttachImageClick"
+                    ToolTipService.ToolTip="Attach Image"/>
 
                 <Button
                     Grid.Column="2"
                     Content="Send"
-                    Width="80"
+                    Width="96"
                     Height="48"
                     CornerRadius="24"
                     Background="{StaticResource AccentCyanBrush}"
-                    Click="OnSendClick"/>
+                    Click="OnSendClick"
+                    IsEnabled="{Binding State, Converter={StaticResource StateToEnabledConverter}}"/>
             </Grid>
         </Border>
     </Grid>
